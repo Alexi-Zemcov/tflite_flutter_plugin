@@ -29,8 +29,9 @@ class Tensor {
   TfLiteType get type => tfLiteTensorType(_tensor);
 
   /// Dimensions of the tensor.
-  List<int> get shape => List.generate(
-      tfLiteTensorNumDims(_tensor), (i) => tfLiteTensorDim(_tensor, i));
+  List<int> get shape =>
+      List.generate(
+          tfLiteTensorNumDims(_tensor), (i) => tfLiteTensorDim(_tensor, i));
 
   /// Underlying data buffer as bytes.
   Uint8List get data {
@@ -143,7 +144,9 @@ class Tensor {
     checkState(isNotNull(ptr), message: 'unallocated');
     final externalTypedData = ptr.asTypedList(size);
     externalTypedData.setRange(0, bytes.length, bytes);
-    checkState(tfLiteTensorCopyFromBuffer(_tensor, ptr.cast(), bytes.length) ==
+    final tfLiteStatus = tfLiteTensorCopyFromBuffer(
+        _tensor, ptr.cast(), bytes.length);
+    checkState(tfLiteStatus  ==
         TfLiteStatus.ok);
     calloc.free(ptr);
   }
@@ -204,7 +207,9 @@ class Tensor {
     }
     if (equal == false) {
       throw ArgumentError(
-          'Output object shape mismatch, interpreter returned output of shape: ${obj.shape} while shape of output provided as argument in run is: ${dst.shape}');
+          'Output object shape mismatch, interpreter returned output of shape: ${obj
+              .shape} while shape of output provided as argument in run is: ${dst
+              .shape}');
     }
     for (var i = 0; i < obj.length; i++) {
       dst[i] = obj[i];
@@ -228,6 +233,7 @@ class Tensor {
 
   @override
   String toString() {
-    return 'Tensor{_tensor: $_tensor, name: $name, type: $type, shape: $shape, data:  ${data.length}';
+    return 'Tensor{_tensor: $_tensor, name: $name, type: $type, shape: $shape, data:  ${data
+        .length}';
   }
 }
